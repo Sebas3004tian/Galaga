@@ -102,10 +102,14 @@ public class ScreenA extends BaseScreen{
 		if(e.getCode().equals(KeyCode.A)) {
 			if(avatar.getX()>0) {
 				avatar.setRigth(true);
+			}else {
+				avatar.setRigth(false);
 			}
 		}else if (e.getCode().equals(KeyCode.D)) {
 			if(avatar.getX()<430) {
 				avatar.setLeft(true);
+			}else {
+				avatar.setLeft(false);
 			}
 		} else if (e.getCode().equals(KeyCode.SPACE)) {
 			bullets.add(new Bullet(canvas, avatar.getX()+5, avatar.getY()+5));
@@ -118,13 +122,10 @@ public class ScreenA extends BaseScreen{
 	public void onKeyReleased(KeyEvent e) {
 		
 		if(e.getCode().equals(KeyCode.A)) {
-			if(avatar.getX()>0) {
-				avatar.setRigth(false);
-			}
+			avatar.setRigth(false);
 		}else if (e.getCode().equals(KeyCode.D)) {
-			if(avatar.getX()<430) {
-				avatar.setLeft(false);
-			}
+			avatar.setLeft(false);
+			
 		}
 
 	}
