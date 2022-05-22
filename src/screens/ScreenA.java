@@ -97,19 +97,34 @@ public class ScreenA extends BaseScreen{
 	}
 
 	@Override
-	public void onKey(KeyEvent e) {
+	public void onKeyPressed(KeyEvent e) {
 		
 		if(e.getCode().equals(KeyCode.A)) {
 			if(avatar.getX()>0) {
-				avatar.moveXBy(-4);
+				avatar.setRigth(true);
 			}
 		}else if (e.getCode().equals(KeyCode.D)) {
 			if(avatar.getX()<430) {
-				avatar.moveXBy(4);
+				avatar.setLeft(true);
 			}
 		} else if (e.getCode().equals(KeyCode.SPACE)) {
 			bullets.add(new Bullet(canvas, avatar.getX()+5, avatar.getY()+5));
 			avatar.setStatus(1);
+		}
+
+	}
+	
+	@Override
+	public void onKeyReleased(KeyEvent e) {
+		
+		if(e.getCode().equals(KeyCode.A)) {
+			if(avatar.getX()>0) {
+				avatar.setRigth(false);
+			}
+		}else if (e.getCode().equals(KeyCode.D)) {
+			if(avatar.getX()<430) {
+				avatar.setLeft(false);
+			}
 		}
 
 	}

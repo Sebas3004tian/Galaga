@@ -60,11 +60,11 @@ public class GameWindow implements Initializable{
 		});
 		//Lambda 2
 		canvas.setOnKeyPressed(e -> {
-			screens.get(SCREEN).onKey(e);	
+			screens.get(SCREEN).onKeyPressed(e);	
 		});
 		
 		canvas.setOnKeyReleased(e -> {
-			//screens.get(SCREEN).onKey(e);	
+			screens.get(SCREEN).onKeyReleased(e);	
 		});
 	}
 

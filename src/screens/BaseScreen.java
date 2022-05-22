@@ -18,7 +18,8 @@ public abstract class BaseScreen {
 	public abstract void paint();
 	
 	public abstract void onClick(MouseEvent e);
-	public abstract void onKey(KeyEvent e);
+	public abstract void onKeyPressed(KeyEvent e);
+	public abstract void onKeyReleased(KeyEvent e);
 
 
 }

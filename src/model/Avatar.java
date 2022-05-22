@@ -12,6 +12,8 @@ public class Avatar {
 	
 	private int x=215;
 	private int y=550;
+	private boolean rigth;
+	private boolean left;
 	private Image image;
 	
 	//private ArrayList<Image> runImages;
@@ -23,6 +25,8 @@ public class Avatar {
 	public Avatar(Canvas canvas) {
 		this.canvas = canvas;
 		gc = canvas.getGraphicsContext2D();
+		rigth=false;
+		left=false;
 		/*runImages=new ArrayList<Image>();
 		attackImages=new ArrayList<Image>();
 		try {
@@ -43,8 +47,17 @@ public class Avatar {
 	}
 	
 	public void paint() {
+
+		if(rigth) {
+			moveXBy(-4);
+		}
+		if(left) {
+			moveXBy(4);
+		}
+		
 		gc.setFill(Color.RED);
 		gc.fillRect(x,y,20,20);
+		
 		/*if(state==0) {
 			gc.drawImage(runImages.get(frame%10), x, y,100,100);
 			frame++;
@@ -89,4 +102,22 @@ public class Avatar {
 		this.state = state;
 		this.frame=0;
 	}
+
+	public boolean isRigth() {
+		return rigth;
+	}
+
+	public void setRigth(boolean rigth) {
+		this.rigth = rigth;
+	}
+
+	public boolean isLeft() {
+		return left;
+	}
+
+	public void setLeft(boolean left) {
+		this.left = left;
+	}
+	
+	
 }
