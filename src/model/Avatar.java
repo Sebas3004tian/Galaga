@@ -3,6 +3,8 @@ package model;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -16,6 +18,11 @@ public class Avatar {
 	private boolean rigth;
 	private boolean left;
 	private Image image;
+	
+	private double width;
+	private double height;
+	
+	private Boolean alive;
 
 	
 	public Avatar(Canvas canvas) {
@@ -28,9 +35,14 @@ public class Avatar {
 		this.rigth=false;
 		this.left=false;
 		
+		this.alive = true;
+		
 		try {
 			File file = new File("src/img/ship.png");
 			this.image = new Image(new FileInputStream(file));
+			
+			this.width = image.getWidth();
+			this.height = image.getHeight();
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -90,5 +102,22 @@ public class Avatar {
 		this.left = left;
 	}
 	
+	public Rectangle2D getBoundary() {
+        return new Rectangle2D(this.x, this.y, width, height-10);
+    }
+
+    public boolean intersects(Bullet bullet) {
+        return bullet.getBoundary().intersects(this.getBoundary());
+    }
+
+	public Boolean isAlive() {
+		return alive;
+	}
+
+	public void setAlive(Boolean alive) {
+		this.alive = alive;
+	}
+    
+    
 	
 }
