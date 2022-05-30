@@ -3,6 +3,8 @@ package model;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -17,9 +19,15 @@ public class Enemy extends Thread{
 	private int y;
 	private boolean isAlive=true;
 	private Image image;
+
+	private int frame=0;
+
+	private ArrayList<Image> muerte;
+	private int contMuerte=0;
 	
 	private double width;
 	private double height;
+	
 	
 	@Override
 	public void run() {
@@ -45,19 +53,29 @@ public class Enemy extends Thread{
 		this.x = x;
 		this.y = y;
 		
+		muerte=new ArrayList<Image>();
+		
 		try {
-			File file = new File("src/img/enemy.png");
+			File file = new File("src/img/enemy/Enemy.png");
 			image = new Image(new FileInputStream(file));
 			
-			this.width = image.getWidth();
-			this.height = image.getHeight();
+			this.width = 40;
+			this.height = 40;
 		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 
 	public void paint() {
-		gc.drawImage(image, x, y);
+		if(contMuerte!=0) {
+			gc.drawImage(muerte.get(frame%10), x-32, y-32,64,64);
+			frame++;
+		}else {
+			gc.drawImage(image, x, y,40,40);
+			frame++;
+		}
 	}
 
 	public int getX() {
@@ -81,6 +99,9 @@ public class Enemy extends Thread{
 	}
 
 	public void setAlive(boolean isAlive) {
+		if(!isAlive) {
+			contMuerte=10;
+		}
 		this.isAlive = isAlive;
 	}
 	

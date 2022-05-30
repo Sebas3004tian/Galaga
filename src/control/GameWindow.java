@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ProgressBar;
 import model.Player;
 import screens.GameScreen;
 
@@ -15,6 +16,10 @@ public class GameWindow implements Initializable{
 	
 	@FXML
 	private Canvas canvas;
+	
+	@FXML
+	private ProgressBar healthBarPB;
+	 
 	private GraphicsContext gc;
 	
 	public static int SCREEN = 0;
@@ -34,7 +39,7 @@ public class GameWindow implements Initializable{
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		screens = new ArrayList<>();
 		
-		screens.add(new GameScreen(canvas, player));
+		screens.add(new GameScreen(canvas, player,healthBarPB));
 	
 	
 		gc = canvas.getGraphicsContext2D();
@@ -45,7 +50,7 @@ public class GameWindow implements Initializable{
 				Platform.runLater(()->{
 					paint();
 				});
-				pause(50);
+				pause(35);
 				FRAMES++;
 			}
 		}).start();

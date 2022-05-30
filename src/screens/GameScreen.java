@@ -1,15 +1,23 @@
 package screens;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Random;
 
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import model.Avatar;
 import model.AvatarBullet;
@@ -22,6 +30,7 @@ import model.Player;
 public class GameScreen{
 
 	protected Canvas canvas;
+	protected ProgressBar healthBarPB;
 	protected GraphicsContext gc;
 	
 	private Avatar avatar;
@@ -37,9 +46,50 @@ public class GameScreen{
 	private int level = 1;
 	private Player player;
 	
-	public GameScreen(Canvas canvas, Player player) {
+	private ArrayList<Image> fondoImages;
+	private Image image;
+	private Image vida;
+	private int frame=0;
+	private int muerteX=0;
+	private int muerteY=0;
+	
+
+	private ArrayList<Image> muerte;
+	private int contMuerte=0;
+	
+	public GameScreen(Canvas canvas, Player player, ProgressBar healthBarPB) {
+		
+		fondoImages=new ArrayList<Image>();
+		muerte=new ArrayList<Image>();
+		
+		try {
+			for(int i=1;i<=7;i++) {
+				File file = new File("src/img/fondo/F("+i+").png");
+				
+				image = new Image(new FileInputStream(file));
+				fondoImages.add(image);
+				fondoImages.add(image);
+				fondoImages.add(image);
+			}
+			for(int i=1;i<=5;i++) {
+				File file2 = new File("src/img/enemy/Muerte("+i+").png");
+				image = new Image(new FileInputStream(file2));
+				muerte.add(image);
+				muerte.add(image);
+			}
+			File file = new File("src/img/avatar/Normal.png");
+			vida = new Image(new FileInputStream(file));
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		this.player = player;
 		this.canvas = canvas;
+		this.healthBarPB=healthBarPB;
+		
 		gc = canvas.getGraphicsContext2D();
 		avatar = new Avatar(canvas);
 		bullets = new ArrayList<>();
@@ -49,14 +99,14 @@ public class GameScreen{
 		canShoot = true;
 		canEnemiesShoot = true;
 		
-		for(int i=0;i<enemigos;i++) {
+		for(int i=1;i<enemigos+1;i++) {
 			Enemy enemigos=new Enemy(canvas, enemigoX, enemigoY);
 			enemigos.start();
 			enemies.add(enemigos);
 			enemigoX+=70;
-			if(i==4) {
+			if(i%5==0) {
 				enemigoX=70;
-				enemigoY+=50;
+				enemigoY-=50;
 			}
 		}
 	}		
@@ -64,17 +114,25 @@ public class GameScreen{
 	
 
 	public void paint() {
-		gc.setFill(Color.BLACK);
-		gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+		
+		gc.drawImage(fondoImages.get(frame),0, 0);
+		frame++;
+		
+		if(frame>=21) {
+			frame=0;
+		}
 		
 		avatar.paint();
 		
-		System.out.println("Salud: "+avatar.getHealth()); //Salud
+		
+		
+		//System.out.println("Salud: "+avatar.getHealth()); //Salud
 		//System.out.println("Vidas: "+avatar.getLives()); //Vidas
 
 		
 		if(avatar.getHealth()<=0) {
 			avatar.decreaseLives();
+			healthBarPB.setProgress(1);
 			avatar.setHealth(100);
 		}
 		
@@ -170,6 +228,11 @@ public class GameScreen{
 
 			if(avatar.intersects(p)) {
 				avatar.decreaseHealth(p.getDamage());
+				
+				double actualHealth=healthBarPB.getProgress();
+				double damage=p.getDamage();
+				healthBarPB.setProgress(actualHealth-damage/100);
+				
 				enemyBullets.remove(i);
 				return;
 			}
@@ -183,9 +246,16 @@ public class GameScreen{
 				Bullet p = bullets.get(j);
 
 				if(b.intersects(p)) {
+					//AQUI SIGNIFICA QUE MATO A UNO
+					muerteX=enemies.get(i).getX();
+					muerteY=enemies.get(i).getY();
+					contMuerte=10;
+					
+					
 					Enemy deletedEnemy = enemies.remove(i);
 					deletedEnemy.setAlive(false);
 					bullets.remove(j);
+					player.increaseEnemKilled(1);
 					player.increaseScore(10*level);
 					return;
 				}
@@ -193,19 +263,59 @@ public class GameScreen{
 			}
 		}	
 		
+		if(contMuerte!=0) {
+			gc.drawImage(muerte.get(frame%10), muerteX, muerteY,64,64);
+			contMuerte--;
+		}
+		
 		for (int i = 0; i < enemies.size(); i++) {
 	
 			Enemy b = enemies.get(i);
+			
+			if(b.getY()>=canvas.getHeight()) {
+				resetLevel();
+				return;
+			}
+			
+			/*if(avatar.intersects(b)) {
+				Enemy deletedEnemy = enemies.remove(i);
+				deletedEnemy.setAlive(false);
+				avatar.setAlive(false);
+				return;
+			}*/
 
 			if(avatar.intersects(b)) {
 				Enemy deletedEnemy = enemies.remove(i);
 				deletedEnemy.setAlive(false);
-				avatar.setAlive(false);
+				if(avatar.getLives()>0) {
+					resetLevel();
+				}else {
+					avatar.setAlive(false);
+				}
 				return;
 			}
 
 		}	
 		
+		
+		for(int i=0;i<avatar.getLives();i++) {
+			gc.drawImage(vida, 420-(i*20), 35,15,15);
+		}
+		
+		gc.setFill(Color.YELLOW);
+		gc.setFont(Font.font("MS Reference Sans Serif",FontWeight.BOLD, FontPosture.ITALIC, 16.0));
+		gc.fillText(player.getScore()+"", 300, 48);
+
+		gc.setFill(Color.MEDIUMPURPLE);
+		gc.setFont(Font.font("MS Reference Sans Serif",FontWeight.BOLD, FontPosture.ITALIC, 18.0));
+		gc.fillText("Level: "+level, 10, 20);
+		
+	}
+	
+	public void resetLevel() {
+		avatar.decreaseLives();
+		healthBarPB.setProgress(1);
+		enemies = new ArrayList<>();
 	}
 
 
@@ -226,7 +336,7 @@ public class GameScreen{
 		} else if (e.getCode().equals(KeyCode.SPACE)) {	
 			try {
 				if(canShoot) {
-					bullets.add(new AvatarBullet(canvas, avatar.getX()+57, avatar.getY()-73));
+					bullets.add(new AvatarBullet(canvas, avatar.getX()+30, avatar.getY()));
 					BulletThread thread = new BulletThread(200, this, 1);
 					thread.start();
 				}
