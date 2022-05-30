@@ -30,9 +30,7 @@ public class Enemy extends Thread{
 			}
 			try {
 				Thread.sleep(80);
-				if(y<canvas.getHeight()/2) {
-					y++;
-				}
+				y++;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

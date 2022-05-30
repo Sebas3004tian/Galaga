@@ -11,8 +11,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import main.Main;
+import model.Player;
 
 public class MainWindow implements Initializable{
 
@@ -20,8 +22,15 @@ public class MainWindow implements Initializable{
     private Button playBTN;
 
     @FXML
+    private TextField nameTF;
+    
+    @FXML
     void play(ActionEvent event) throws IOException {
     	FXMLLoader loader = new FXMLLoader(Main.class.getResource("../ui/GameWindow.fxml"));
+    	
+    	Player player = new Player(nameTF.getText());
+    	
+    	loader.setController(new GameWindow(player));
 		Parent parent = loader.load();
 		Scene scene = new Scene(parent);
 		Stage stage = new Stage();

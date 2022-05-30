@@ -10,12 +10,14 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import model.Avatar;
 import model.AvatarBullet;
 import model.Bullet;
 import model.BulletThread;
 import model.Enemy;
 import model.EnemyBullet;
+import model.Player;
 
 public class GameScreen{
 
@@ -32,8 +34,11 @@ public class GameScreen{
 	private boolean canShoot; 
 	private boolean canEnemiesShoot;
 	private int difficulty = 0;
+	private int level = 1;
+	private Player player;
 	
-	public GameScreen(Canvas canvas) {
+	public GameScreen(Canvas canvas, Player player) {
+		this.player = player;
 		this.canvas = canvas;
 		gc = canvas.getGraphicsContext2D();
 		avatar = new Avatar(canvas);
@@ -64,18 +69,31 @@ public class GameScreen{
 		
 		avatar.paint();
 		
+		System.out.println("Salud: "+avatar.getHealth()); //Salud
+		//System.out.println("Vidas: "+avatar.getLives()); //Vidas
+
+		
+		if(avatar.getHealth()<=0) {
+			avatar.decreaseLives();
+			avatar.setHealth(100);
+		}
+		
+		if(avatar.getLives()<=0) {
+			avatar.setAlive(false);
+		}
+		
 		if(!avatar.isAlive()) {
 			System.out.println("MORISTE");
-			try {
-				Thread.sleep(2000);
-				System.exit(0);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			Stage stage = (Stage) canvas.getScene().getWindow();
+			stage.close();
 		}
 		
 		if(enemies.size()==0) {
-			difficulty+=200;
+			if(difficulty<2000) {
+				difficulty+=250;
+			}
+			
+			level += 1;
 			enemigoX=70;
 			enemigoY=40;
 			for(int i=0;i<enemigos;i++) {
@@ -91,7 +109,6 @@ public class GameScreen{
 		}
 		
 		for (int i = 0; i < enemies.size(); i++) {
-			System.out.println(i);
 			Enemy enemy = enemies.get(i);
 			enemy.paint();
 		}	
@@ -149,10 +166,10 @@ public class GameScreen{
 		}
 		
 		for (int i = 0; i < enemyBullets.size(); i++) {	
-			Bullet p = enemyBullets.get(i);
+			EnemyBullet p = enemyBullets.get(i);
 
 			if(avatar.intersects(p)) {
-				avatar.setAlive(false);
+				avatar.decreaseHealth(p.getDamage());
 				enemyBullets.remove(i);
 				return;
 			}
@@ -166,13 +183,27 @@ public class GameScreen{
 				Bullet p = bullets.get(j);
 
 				if(b.intersects(p)) {
-					Enemy deletedBox =enemies.remove(i);
-					deletedBox.setAlive(false);
+					Enemy deletedEnemy = enemies.remove(i);
+					deletedEnemy.setAlive(false);
 					bullets.remove(j);
+					player.increaseScore(10*level);
 					return;
 				}
 				
 			}
+		}	
+		
+		for (int i = 0; i < enemies.size(); i++) {
+	
+			Enemy b = enemies.get(i);
+
+			if(avatar.intersects(b)) {
+				Enemy deletedEnemy = enemies.remove(i);
+				deletedEnemy.setAlive(false);
+				avatar.setAlive(false);
+				return;
+			}
+
 		}	
 		
 	}

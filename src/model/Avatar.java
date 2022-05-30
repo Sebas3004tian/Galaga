@@ -23,6 +23,10 @@ public class Avatar {
 	private double height;
 	
 	private Boolean alive;
+	
+	private int health;
+	
+	private int lives;
 
 	
 	public Avatar(Canvas canvas) {
@@ -34,6 +38,10 @@ public class Avatar {
 		
 		this.rigth=false;
 		this.left=false;
+		
+		this.health = 100;
+		
+		this.lives = 3;
 		
 		this.alive = true;
 		
@@ -117,7 +125,30 @@ public class Avatar {
 	public void setAlive(Boolean alive) {
 		this.alive = alive;
 	}
+
+	public boolean intersects(Enemy enemy) {
+		return enemy.getBoundary().intersects(this.getBoundary());
+	}
     
-    
+	public int getHealth() {
+		return health;
+	}
+
+	public void setHealth(int health) {
+		this.health = health;
+	}
+	
+	public void decreaseHealth(int damage) {
+		this.health -=  damage;
+	}
+	
+	public void decreaseLives() {
+		this.lives -=  1;
+	}
+
+	public int getLives() {
+		return lives;
+	}
+	
 	
 }

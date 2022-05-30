@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import model.Player;
 import screens.GameScreen;
 
 public class GameWindow implements Initializable{
@@ -21,11 +22,19 @@ public class GameWindow implements Initializable{
 	
 	private ArrayList<GameScreen> screens;
 	
+	private Player player;
+	
+	
+	
+	public GameWindow(Player player) {
+		this.player = player;
+	}
+
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		screens = new ArrayList<>();
 		
-		screens.add(new GameScreen(canvas));
+		screens.add(new GameScreen(canvas, player));
 	
 	
 		gc = canvas.getGraphicsContext2D();
