@@ -1,5 +1,6 @@
 package model;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -12,6 +13,9 @@ public class Bullet {
 	private int size;
 	private int speed;
 	
+	private double width;
+	private double height;
+	
 	public Bullet(Canvas canvas, int x, int y) {
 		this.canvas = canvas;
 		this.gc = canvas.getGraphicsContext2D();
@@ -19,6 +23,9 @@ public class Bullet {
 		this.y = y;
 		this.size = 10;
 		this.speed = 6;
+		
+		this.width = size;
+		this.height = size;
 	}
 	
 	public void paint() {
@@ -43,6 +50,11 @@ public class Bullet {
 		this.y = y;
 	}
 	
+    public Rectangle2D getBoundary() {
+        return new Rectangle2D(this.x, this.y, width, height);
+    }
 	
-	
+    public boolean intersects(Enemy enemy) {
+        return enemy.getBoundary().intersects(this.getBoundary());
+    }
 }

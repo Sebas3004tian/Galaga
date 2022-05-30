@@ -1,49 +1,40 @@
 package model;
 
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
 
 public class Avatar {
 	private Canvas canvas;
 	private GraphicsContext gc;
 	
-	private int x=215;
-	private int y=550;
+	private int x;
+	private int y;
 	private boolean rigth;
 	private boolean left;
 	private Image image;
-	
-	//private ArrayList<Image> runImages;
-	//private ArrayList<Image> attackImages;
-	
-	private int state=0;
-	private int frame=0;
+
 	
 	public Avatar(Canvas canvas) {
 		this.canvas = canvas;
-		gc = canvas.getGraphicsContext2D();
-		rigth=false;
-		left=false;
-		/*runImages=new ArrayList<Image>();
-		attackImages=new ArrayList<Image>();
+		this.gc = canvas.getGraphicsContext2D();
+		
+		this.x = 215;
+		this.y = 550;
+		
+		this.rigth=false;
+		this.left=false;
+		
 		try {
-			for(int i=1;i<=10;i++) {
-				File file = new File("src/image/Run ("+i+").png");
-				image = new Image(new FileInputStream(file));
-				runImages.add(image);
-			}
-			for(int i=1;i<=10;i++) {
-				File file = new File("src/image/Attack ("+i+").png");
-				image = new Image(new FileInputStream(file));
-				attackImages.add(image);
-			}
+			File file = new File("src/img/ship.png");
+			this.image = new Image(new FileInputStream(file));
+			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}*/
+		}
 	}
 	
 	public void paint() {
@@ -55,19 +46,8 @@ public class Avatar {
 			moveXBy(4);
 		}
 		
-		gc.setFill(Color.RED);
-		gc.fillRect(x,y,20,20);
+		gc.drawImage(image, x, y-80);
 		
-		/*if(state==0) {
-			gc.drawImage(runImages.get(frame%10), x, y,100,100);
-			frame++;
-		}else if(state==1) {
-			gc.drawImage(attackImages.get(frame), x, y,100,100);
-			frame++;
-			if(frame==10) {
-				this.state=0;
-			}
-		}*/
 	}
 
 	public void moveXBy(int i) {
@@ -92,15 +72,6 @@ public class Avatar {
 
 	public void setY(int y) {
 		this.y = y;
-	}
-
-	public int getStatus() {
-		return state;
-	}
-
-	public void setStatus(int state) {
-		this.state = state;
-		this.frame=0;
 	}
 
 	public boolean isRigth() {

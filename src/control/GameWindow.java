@@ -3,15 +3,12 @@ package control;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyCode;
-import screens.BaseScreen;
-import screens.ScreenA;
+import screens.GameScreen;
 
 public class GameWindow implements Initializable{
 	
@@ -22,13 +19,13 @@ public class GameWindow implements Initializable{
 	public static int SCREEN = 0;
 	public static long FRAMES = 0;
 	
-	private ArrayList<BaseScreen> screens;
+	private ArrayList<GameScreen> screens;
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		screens = new ArrayList<>();
 		
-		screens.add(new ScreenA(canvas));
+		screens.add(new GameScreen(canvas));
 	
 	
 		gc = canvas.getGraphicsContext2D();
@@ -72,7 +69,6 @@ public class GameWindow implements Initializable{
 		try {
 			Thread.sleep(time);
 		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 	}

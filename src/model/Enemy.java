@@ -1,16 +1,25 @@
 package model;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 
-public class Box extends Thread{
+public class Enemy extends Thread{
 	private Canvas canvas;
 	private GraphicsContext gc;
 	
 	private int x;
 	private int y;
 	private boolean isAlive=true;
+	private Image image;
+	
+	private double width;
+	private double height;
 	
 	@Override
 	public void run() {
@@ -21,25 +30,36 @@ public class Box extends Thread{
 			}
 			try {
 				Thread.sleep(80);
-				y++;
+				if(y<canvas.getHeight()/2) {
+					y++;
+				}
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 		}
 	}
 	
-	public Box(Canvas canvas, int x, int y) {
+	public Enemy(Canvas canvas, int x, int y) {
 		this.canvas = canvas;
 		this.gc = canvas.getGraphicsContext2D();
+		
 		this.x = x;
 		this.y = y;
+		
+		try {
+			File file = new File("src/img/enemy.png");
+			image = new Image(new FileInputStream(file));
+			
+			this.width = image.getWidth();
+			this.height = image.getHeight();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void paint() {
-		gc.setFill(Color.WHITE);
-		gc.fillRect(x,y,20,20);
+		gc.drawImage(image, x, y);
 	}
 
 	public int getX() {
@@ -66,7 +86,13 @@ public class Box extends Thread{
 		this.isAlive = isAlive;
 	}
 	
-	
+	public Rectangle2D getBoundary() {
+        return new Rectangle2D(this.x, this.y, width, height-10);
+    }
+
+    public boolean intersects(Bullet bullet) {
+        return bullet.getBoundary().intersects(this.getBoundary());
+    }
 	
 	
 }
