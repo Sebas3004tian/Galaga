@@ -22,13 +22,11 @@ public class BulletThread extends Thread{
 				screen.setCanShoot(false);
 				pause(time);
 				screen.setCanShoot(true);
-			} else if(mode == 2) {
-				screen.setCanEnemyShoot(false);
+			} else if(mode==2) {
+				screen.setCanEnemiesShoot(false);
 				pause(time);
-				screen.setCanEnemyShoot(true);
+				screen.setCanEnemiesShoot(true);
 			}
-			
-			
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

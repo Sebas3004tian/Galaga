@@ -1,8 +1,8 @@
 package screens;
 
 import java.util.ArrayList;
+import java.util.Random;
 
-import control.GameWindow;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -23,28 +23,26 @@ public class GameScreen{
 	protected GraphicsContext gc;
 	
 	private Avatar avatar;
-	private ArrayList<Bullet> bullets;
-	private ArrayList<Bullet> enemyBullets;
+	private ArrayList<AvatarBullet> bullets;
+	private ArrayList<EnemyBullet> enemyBullets;
 	private ArrayList<Enemy> enemies;
 	private int enemigos=10;
+	int enemigoX=70;
+	int enemigoY=40;
 	private boolean canShoot; 
-	private boolean canEnemyShoot;
-	
-	
+	private boolean canEnemiesShoot;
+	private int difficulty = 0;
 	
 	public GameScreen(Canvas canvas) {
 		this.canvas = canvas;
 		gc = canvas.getGraphicsContext2D();
 		avatar = new Avatar(canvas);
-		bullets = new ArrayList<Bullet>();
-		enemyBullets = new ArrayList<Bullet>();
+		bullets = new ArrayList<>();
+		enemyBullets = new ArrayList<>();
 		enemies = new ArrayList<>();
 		
 		canShoot = true;
-		canEnemyShoot = true;
-		
-		int enemigoX=70;
-		int enemigoY=40;
+		canEnemiesShoot = true;
 		
 		for(int i=0;i<enemigos;i++) {
 			Enemy enemigos=new Enemy(canvas, enemigoX, enemigoY);
@@ -56,7 +54,9 @@ public class GameScreen{
 				enemigoY+=50;
 			}
 		}
-	}
+	}		
+	
+	
 
 	public void paint() {
 		gc.setFill(Color.BLACK);
@@ -73,6 +73,30 @@ public class GameScreen{
 				e.printStackTrace();
 			}
 		}
+		
+		if(enemies.size()==0) {
+			difficulty+=200;
+			enemigoX=70;
+			enemigoY=40;
+			for(int i=0;i<enemigos;i++) {
+				Enemy enemigos=new Enemy(canvas, enemigoX, enemigoY);
+				enemigos.start();
+				enemies.add(enemigos);
+				enemigoX+=70;
+				if(i==4) {
+					enemigoX=70;
+					enemigoY+=50;
+				}
+			}
+		}
+		
+		for (int i = 0; i < enemies.size(); i++) {
+			System.out.println(i);
+			Enemy enemy = enemies.get(i);
+			enemy.paint();
+		}	
+	
+		
 		
 		if(avatar.getX()>=canvas.getWidth()) {
 			avatar.setX(-57);
@@ -92,36 +116,31 @@ public class GameScreen{
 			}
 		}		
 		
-		for (int i = 0; i < enemies.size(); i++) {
-			Enemy enemy = enemies.get(i);
-			enemy.paint();
-		}	
-		
-		int k = 0;
-		while(k<enemies.size()) {
-			Enemy enemy = enemies.get(k);
-			if(canEnemyShoot) {
-				try {
-					BulletThread thread = new BulletThread(4000, this, 2);
-					thread.start();
-					enemyBullets.add(new EnemyBullet(this.canvas, enemy.getX()+24, enemy.getY()+32));
-					k++;
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
+		if(canEnemiesShoot) {
 			try {
-				BulletThread thread = new BulletThread(500, this, 0);
+				Random r = new Random();
+				int enemyNumber = r.nextInt(enemies.size());	
+				Enemy enemy = enemies.get(enemyNumber);
+				enemyBullets.add(new EnemyBullet(this.canvas, enemy.getX()+24, enemy.getY()+32));
+				BulletThread thread;
+				thread = new BulletThread(2000-difficulty, this, 2);
 				thread.start();
-				k++;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 		}
-
 		
+
+	
 		for (int i = 0; i < enemyBullets.size(); i++) {
-			enemyBullets.get(i).paint();
+			try {
+				BulletThread thread = new BulletThread(100, this, 0);
+				thread.start();
+				enemyBullets.get(i).paint();
+
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
 			
 			if (enemyBullets.get(i).getY() >= canvas.getHeight()) {
 				enemyBullets.remove(i);
@@ -149,13 +168,13 @@ public class GameScreen{
 				if(b.intersects(p)) {
 					Enemy deletedBox =enemies.remove(i);
 					deletedBox.setAlive(false);
-					//boxes.remove(i);
 					bullets.remove(j);
 					return;
 				}
 				
 			}
-		}
+		}	
+		
 	}
 
 
@@ -177,7 +196,7 @@ public class GameScreen{
 			try {
 				if(canShoot) {
 					bullets.add(new AvatarBullet(canvas, avatar.getX()+57, avatar.getY()-73));
-					BulletThread thread = new BulletThread(500, this, 1);
+					BulletThread thread = new BulletThread(200, this, 1);
 					thread.start();
 				}
 			} catch (InterruptedException e1) {
@@ -196,7 +215,7 @@ public class GameScreen{
 			avatar.setLeft(false);
 		} else if (e.getCode().equals(KeyCode.SPACE)) {
 			try {
-				BulletThread thread = new BulletThread(500, this, 1);
+				BulletThread thread = new BulletThread(200, this, 1);
 				thread.start();
 				canShoot = false;
 			} catch (InterruptedException e1) {
@@ -206,23 +225,15 @@ public class GameScreen{
 		} 
 	}
 
-	public boolean isCanShoot() {
-		return canShoot;
-	}
-
 	public void setCanShoot(boolean canShoot) {
 		this.canShoot = canShoot;
 	}
 
-	public boolean isCanEnemyShoot() {
-		return canEnemyShoot;
+	public void setCanEnemiesShoot(boolean canEnemiesShoot) {
+		this.canEnemiesShoot = canEnemiesShoot;
 	}
-
-	public void setCanEnemyShoot(boolean canEnemyShoot) {
-		this.canEnemyShoot = canEnemyShoot;
-	}
-
 	
 	
 
+	
 }

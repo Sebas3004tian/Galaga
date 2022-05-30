@@ -9,7 +9,7 @@ public class EnemyBullet extends Bullet {
 		super(canvas, x, y);
 		this.size = 10;
 		this.speed = 6;
-		this.color = Color.GREEN;
+		this.color = Color.YELLOW;
 	}
 	
 	@Override

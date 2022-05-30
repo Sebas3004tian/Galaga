@@ -53,4 +53,8 @@ public abstract class Bullet {
     public boolean intersects(Enemy enemy) {
         return enemy.getBoundary().intersects(this.getBoundary());
     }
+    
+    public boolean intersects(Bullet otherBullet) {
+        return otherBullet.getBoundary().intersects(this.getBoundary());
+    }
 }
