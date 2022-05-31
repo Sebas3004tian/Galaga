@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -11,6 +14,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
+import model.Player;
 import model.PlayerData;
 
 
@@ -26,6 +30,13 @@ public class GameOverScreen {
 
 	
 	public GameOverScreen(Canvas canvas, PlayerData data) {
+		
+		Collections.sort(data.players, new Comparator<Player>() {
+			@Override
+			public int compare(Player p1, Player p2) {
+				return new Integer(p2.getScore()).compareTo(new Integer(p1.getScore()));
+			}
+		});
 		
 		this.data = data;
 		
