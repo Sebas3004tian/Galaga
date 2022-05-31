@@ -10,9 +10,11 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ProgressBar;
 import model.Player;
+import model.PlayerData;
+import screens.GameOverScreen;
 import screens.GameScreen;
 
-public class GameWindow implements Initializable{
+public class GameOverWindow implements Initializable{
 	
 	@FXML
 	private Canvas canvas;
@@ -25,20 +27,20 @@ public class GameWindow implements Initializable{
 	public static int SCREEN = 0;
 	public static long FRAMES = 0;
 	
-	private GameScreen screen;
+	private GameOverScreen screen;
 	
 	private Player player;
 	
+	private PlayerData data;
 	
-	
-	public GameWindow(Player player) {
-		this.player = player;
+	public GameOverWindow(PlayerData data) {
+		this.data = data;
 	}
 
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		
-		screen = new GameScreen(canvas, player,healthBarPB);
+		screen = new GameOverScreen(canvas, data);
 	
 	
 		gc = canvas.getGraphicsContext2D();
@@ -55,28 +57,13 @@ public class GameWindow implements Initializable{
 		}).start();
 		
 		
-		
-		initEvents();
 	}
 	
 	private void paint() {
 		screen.paint();
 	}
 
-	public void initEvents() {
-		//Lambda 1
-		canvas.setOnMouseClicked(e -> {
-			screen.onClick(e);
-		});
-		//Lambda 2
-		canvas.setOnKeyPressed(e -> {
-			screen.onKeyPressed(e);	
-		});
-		
-		canvas.setOnKeyReleased(e -> {
-			screen.onKeyReleased(e);	
-		});
-	}
+
 
 	private void pause(int time) {
 		try {

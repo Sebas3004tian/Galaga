@@ -3,10 +3,16 @@ package screens;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import control.GameOverWindow;
+import control.MainWindow;
 import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ProgressBar;
@@ -19,6 +25,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import main.Main;
 import model.Avatar;
 import model.AvatarBullet;
 import model.Bullet;
@@ -26,6 +33,7 @@ import model.BulletThread;
 import model.Enemy;
 import model.EnemyBullet;
 import model.Player;
+import model.PlayerData;
 
 public class GameScreen{
 
@@ -56,11 +64,19 @@ public class GameScreen{
 
 	private ArrayList<Image> muerte;
 	private int contMuerte=0;
+	boolean closed;
+	
+	static PlayerData data;
 	
 	public GameScreen(Canvas canvas, Player player, ProgressBar healthBarPB) {
 		
+		data = new PlayerData();
+		data.loadJSON();
+		
 		fondoImages=new ArrayList<Image>();
 		muerte=new ArrayList<Image>();
+		
+		closed = false;
 		
 		try {
 			for(int i=1;i<=7;i++) {
@@ -81,7 +97,6 @@ public class GameScreen{
 			vida = new Image(new FileInputStream(file));
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -124,12 +139,6 @@ public class GameScreen{
 		
 		avatar.paint();
 		
-		
-		
-		//System.out.println("Salud: "+avatar.getHealth()); //Salud
-		//System.out.println("Vidas: "+avatar.getLives()); //Vidas
-
-		
 		if(avatar.getHealth()<=0) {
 			avatar.decreaseLives();
 			healthBarPB.setProgress(1);
@@ -140,10 +149,23 @@ public class GameScreen{
 			avatar.setAlive(false);
 		}
 		
-		if(!avatar.isAlive()) {
-			System.out.println("MORISTE");
+		if(!avatar.isAlive() && !closed) {
+			data.addPlayer(player);
+			data.saveJSON();
 			Stage stage = (Stage) canvas.getScene().getWindow();
 			stage.close();
+			try {
+				FXMLLoader loader = new FXMLLoader(Main.class.getResource("../ui/GameOverWindow.fxml"));
+				loader.setController(new GameOverWindow(data));
+				Parent parent = loader.load();
+				Scene scene = new Scene(parent);
+				Stage stage2 = new Stage();
+				stage2.setScene(scene);
+				stage2.show();
+			} catch(IOException e) {
+				e.printStackTrace();
+			}
+			closed = true;
 		}
 		
 		if(enemies.size()==0) {
